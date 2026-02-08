@@ -1,7 +1,7 @@
 [project]
 name = "mp3-tag"
 version = "0.1.0"
-description = "Add your description here"
+description = "A Python command-line tool that automatically organizes your music library."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

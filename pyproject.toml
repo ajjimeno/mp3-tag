@@ -5,7 +5,11 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "black>=26.1.0",
+    "click>=8.3.1",
     "eyed3>=0.9.9",
+    "isort>=7.0.0",
     "musicbrainzngs>=0.7.1",
     "mutagen>=1.47.0",
+    "ruff>=0.15.0",
 ]

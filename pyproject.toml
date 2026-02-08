@@ -1,0 +1,11 @@
+[project]
+name = "mp3-tag"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "eyed3>=0.9.9",
+    "musicbrainzngs>=0.7.1",
+    "mutagen>=1.47.0",
+]

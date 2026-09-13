@@ -37,6 +37,15 @@ KNOWN_RELEASES = {
     "The Beatles/1967-1970 - disc 1": ("0f5ed3b2-a2e0-4b9c-8707-499bd5338026", 1),
     "The Beatles/1967-1970 - disc 2": ("0f5ed3b2-a2e0-4b9c-8707-499bd5338026", 2),
     "Everything But The Girl/Amplified Heart": ("5987c6db-fd13-4d2e-a92b-2d3be0a48e3f", 1),
+    # Matched by track count + per-track duration against mp3 runtimes.
+    "Blondie/Maria": ("036d9cb8-8e5b-411f-9166-93ebd4f96d93", 1),
+    "Blondie/The Best of Blondie": ("e6f8c54e-d1f2-37ab-9d1e-a86682c07f22", 1),
+    "Counting Crows/august and Everything after": ("4cc9676f-38fb-42a3-96d3-cd3b8e1b282e", 1),
+    "Guns N' Roses/Appetite for Destruction": ("7e1aaffd-3f00-4534-bddc-5ff88dc8600b", 1),
+    "Led Zeppelin/mothership-disk1": ("f70e6138-2c32-43c6-b6a7-ade6fc7527be", 1),
+    "Led Zeppelin/mothership-disk2": ("f70e6138-2c32-43c6-b6a7-ade6fc7527be", 2),
+    "The Cranberries/Stars": ("fc3ca3a4-e79a-4854-8457-c3004daaa88e", 1),
+    "The Rolling Stones/disk1": ("da943433-d90b-4100-9f3e-6a5be1183cd8", 1),
 }
 
 # The "1967-1970" disc folders on disk have their album tag swapped

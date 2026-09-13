@@ -5,11 +5,13 @@ organized as <Artist>/<Album>/<track>.mp3 or <Artist>/<track>.mp3.
 Two kinds of gaps are handled:
 
 1. Files that already have a real title and an `albumartist` tag but are
-   missing `artist` -> `artist` is copied from `albumartist`.
+   missing `artist` (or have it set to the placeholder "Unknown Artist")
+   -> `artist` is copied from `albumartist`.
 
-2. Files whose `title` is still the generic ripper placeholder ("Track N")
-   -> the real tracklist is pulled from MusicBrainz (see KNOWN_RELEASES)
-   and both `artist` and `title` are filled in from it.
+2. Files whose `title` is still a generic ripper placeholder ("Track N"
+   or "Unknown Title") -> the real tracklist is pulled from MusicBrainz
+   (see KNOWN_RELEASES) and both `artist` and `title` are filled in
+   from it.
 
 Run with --dry-run first to see what would change without writing anything.
 """
@@ -25,7 +27,8 @@ from mutagen.easyid3 import EasyID3
 
 mb.set_useragent("mp3-tag-metadata-fixer", "0.1", "antonio.jimeno@gmail.com")
 
-GENERIC_TITLE_RE = re.compile(r"\bTrack\s*\d+\b", re.IGNORECASE)
+GENERIC_TITLE_RE = re.compile(r"\bTrack\s*\d+\b|^Unknown Title$", re.IGNORECASE)
+GENERIC_ARTIST_RE = re.compile(r"^Unknown Artist$", re.IGNORECASE)
 
 # Album folders (relative to the library root) whose files only have a
 # generic "Track N" title and need real tracklist data. Each maps to a
@@ -61,6 +64,11 @@ KNOWN_RELEASES = {
     "Paco de Lucia/Concierto de Aranjuez": ("d55a412e-4b09-4e70-8497-42ab1a9a5c72", 1),
     "Paco de Lucia/Entre Dos Aguas": ("41b40029-896b-3aac-bde9-76dc014827ec", 1),
     "The Mamas & The Papas/California Dreaming": ("3f288778-2a59-47d4-ae4b-cb2f3a4d6022", 1),
+    # These had literal "Unknown Title" / "Unknown Artist" placeholders.
+    "10,000 maniacs/10,000 maniacs - mtv unplugged": ("1ab7e157-3eaf-4168-935b-5abcd488c11e", 1),
+    "Eric Clapton/Eric Clapton - eric clapton unplugged": ("87226a20-b5cc-4247-adcf-a1e8336ad85f", 1),
+    "Joe Cocker/Joe Cocker - the best of Joe Cocker": ("b7a6836f-ed2a-4b89-a24e-71937b5ade19", 1),
+    "Tina Turner/Tina Turner - Greatest Hits": ("06973007-a37c-422c-bf48-41a270d2cd8b", 1),
 }
 
 # Files whose artist/albumartist tag is outright wrong (not just missing)
@@ -156,10 +164,12 @@ def main():
                 audio["album"] = correct_album
                 file_changes.append(f"album: {current_album!r} -> {correct_album!r}")
 
-        if "artist" not in audio and "albumartist" in audio:
+        current_artist = audio.get("artist", [""])[0]
+        if (not current_artist or GENERIC_ARTIST_RE.match(current_artist)) and "albumartist" in audio:
             new_artist = audio["albumartist"][0]
-            audio["artist"] = new_artist
-            file_changes.append(f"artist: None -> {new_artist!r}")
+            if new_artist != current_artist:
+                audio["artist"] = new_artist
+                file_changes.append(f"artist: {current_artist or None!r} -> {new_artist!r}")
 
         if file_changes:
             changed += 1

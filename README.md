@@ -82,3 +82,37 @@ an entry to `KNOWN_RELEASES`; it does not do automatic audio fingerprinting.
 python fix_missing_metadata.py "/path/to/media/library" --dry-run
 python fix_missing_metadata.py "/path/to/media/library"
 ```
+
+## Fixing metadata by audio content (unknown/mixed-artist folders)
+
+For folders where the album isn't known, or that turn out to be
+mixed-artist compilations (so there's no single MusicBrainz release to
+text-search for), `identify_by_fingerprint.py` identifies each track by
+its actual audio content instead:
+
+-   Computes a Chromaprint audio fingerprint per file (`ffmpeg` decodes
+    to PCM, `libchromaprint.so` computes the fingerprint via `ctypes` -
+    no `fpcalc` binary or extra system packages required).
+-   Looks the fingerprint up against the [AcoustID](https://acoustid.org/)
+    web service to get the matching MusicBrainz recording's title/artist.
+-   Writes `title`/`artist` for any file whose title still looks like a
+    generic ripper placeholder ("Track N").
+
+Requires a free **application** API key from
+https://acoustid.org/new-application (the key listed at
+https://acoustid.org/my-applications for your app - not your personal
+account API key, which only works for submitting new fingerprints).
+Never commit this key; pass it via `--api-key` or the `ACOUSTID_API_KEY`
+environment variable.
+
+```bash
+export ACOUSTID_API_KEY=your-application-key
+python identify_by_fingerprint.py "/path/to/media/library/Some Folder" --dry-run
+python identify_by_fingerprint.py "/path/to/media/library/Some Folder"
+```
+
+Matches are scored (0-1) but even high-scoring ones can occasionally be
+wrong (a short/generic-sounding passage can fingerprint-match an
+unrelated recording) - skim the `--dry-run` output for anything
+implausible (e.g. a song that couldn't chronologically belong on that
+album) before applying, and exclude it with `--skip "relative/path.mp3"`.
